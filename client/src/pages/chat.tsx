@@ -42,40 +42,70 @@ export default function Chat() {
           break;
 
         case 'message_history':
-          setMessages(message.messages || []);
+          const sortedMessages = (message.messages || []).sort((a: ChatMessage, b: ChatMessage) => {
+            const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+            const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+            return timeA - timeB;
+          });
+          setMessages(sortedMessages);
           break;
 
         case 'message':
-          setMessages(prev => [...prev, {
-            id: message.id,
-            roomId: 0, // We'll handle this on the server
-            username: message.username,
-            content: message.content,
-            messageType: 'message',
-            createdAt: new Date(message.timestamp)
-          }]);
+          setMessages(prev => {
+            const newMessage = {
+              id: message.id,
+              roomId: 0, // We'll handle this on the server
+              username: message.username,
+              content: message.content,
+              messageType: 'message',
+              createdAt: new Date(message.timestamp)
+            };
+            const updated = [...prev, newMessage];
+            // Sort to ensure proper order
+            return updated.sort((a, b) => {
+              const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+              const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+              return timeA - timeB;
+            });
+          });
           break;
 
         case 'system_message':
-          setMessages(prev => [...prev, {
-            id: Date.now(),
-            roomId: 0,
-            username: 'System',
-            content: message.content,
-            messageType: 'system',
-            createdAt: new Date(message.timestamp)
-          }]);
+          setMessages(prev => {
+            const newMessage = {
+              id: Date.now(),
+              roomId: 0,
+              username: 'System',
+              content: message.content,
+              messageType: 'system',
+              createdAt: new Date(message.timestamp)
+            };
+            const updated = [...prev, newMessage];
+            return updated.sort((a, b) => {
+              const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+              const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+              return timeA - timeB;
+            });
+          });
           break;
 
         case 'command_response':
-          setMessages(prev => [...prev, {
-            id: Date.now(),
-            roomId: 0,
-            username: 'System',
-            content: message.content,
-            messageType: 'command',
-            createdAt: new Date()
-          }]);
+          setMessages(prev => {
+            const newMessage = {
+              id: Date.now(),
+              roomId: 0,
+              username: 'System',
+              content: message.content,
+              messageType: 'command',
+              createdAt: new Date()
+            };
+            const updated = [...prev, newMessage];
+            return updated.sort((a, b) => {
+              const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+              const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+              return timeA - timeB;
+            });
+          });
           break;
 
         case 'room_changed':
