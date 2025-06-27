@@ -211,49 +211,45 @@ export default function Chat() {
   }
 
   return (
-    <div className="h-screen bg-terminal-bg text-terminal-text overflow-hidden">
-      {/* Header */}
-      <header className="panel-bg border-b border-gray-700 px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <i className="fas fa-comments accent-blue text-xl"></i>
-          <h1 className="text-lg font-semibold text-white">Terminal Chat</h1>
-          <span className="text-sm text-gray-400">#{currentRoom}</span>
-        </div>
-        
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'} ${!isConnected ? 'animate-pulse' : ''}`}></div>
-            <span className="text-sm text-gray-400">
-              {isConnected ? 'Connected' : 'Disconnected'}
-            </span>
-          </div>
-          
-          <div className="text-sm text-gray-400">
-            <span className="terminal-prompt">@{user.username}</span>
+    <div className="h-screen terminal-bg terminal-text overflow-hidden p-4">
+      <div className="terminal-window h-full flex flex-col">
+        {/* Terminal Header */}
+        <div className="terminal-header">
+          <button className="terminal-button close"></button>
+          <button className="terminal-button minimize"></button>
+          <button className="terminal-button maximize"></button>
+          <span className="terminal-title">Terminal Chat - {user.username}@chatserver:~/{currentRoom}</span>
+          <div className="ml-auto flex items-center space-x-3 text-xs">
+            <div className="flex items-center space-x-1">
+              <div className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'status-online' : 'status-offline'} ${!isConnected ? 'status-connecting' : ''}`}></div>
+              <span className={isConnected ? 'status-online' : 'status-offline'}>
+                {isConnected ? 'ONLINE' : 'OFFLINE'}
+              </span>
+            </div>
           </div>
         </div>
-      </header>
 
-      <div className="flex h-full">
-        {/* Sidebar */}
-        <aside className="w-80 panel-bg border-r border-gray-700 flex flex-col h-full">
-          <OnlineUsers users={onlineUsers} currentUser={user.username} />
-          <RoomsList 
-            rooms={rooms}
-            currentRoom={currentRoom}
-            onJoinRoom={handleJoinRoom}
-          />
-        </aside>
+        <div className="flex flex-1 overflow-hidden">
+          {/* Sidebar */}
+          <aside className="w-80 panel-bg border-r border-gray-800 flex flex-col overflow-hidden">
+            <OnlineUsers users={onlineUsers} currentUser={user.username} />
+            <RoomsList 
+              rooms={rooms}
+              currentRoom={currentRoom}
+              onJoinRoom={handleJoinRoom}
+            />
+          </aside>
 
-        {/* Main Chat Area */}
-        <main className="flex-1 flex flex-col h-full">
-          <TerminalChat 
-            messages={messages}
-            currentUser={user.username}
-            onSendMessage={handleSendMessage}
-            currentRoom={currentRoom}
-          />
-        </main>
+          {/* Main Chat Area */}
+          <main className="flex-1 flex flex-col overflow-hidden">
+            <TerminalChat 
+              messages={messages}
+              currentUser={user.username}
+              onSendMessage={handleSendMessage}
+              currentRoom={currentRoom}
+            />
+          </main>
+        </div>
       </div>
     </div>
   );

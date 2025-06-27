@@ -41,46 +41,48 @@ export default function TerminalChat({ messages, currentUser, onSendMessage, cur
   };
 
   const getMessageStyle = (messageType: string, username: string) => {
-    if (messageType === 'system') return 'text-yellow-400';
-    if (messageType === 'command') return 'text-blue-400';
-    if (username === currentUser) return 'text-green-400';
-    return 'text-white';
+    if (messageType === 'system') return 'terminal-system';
+    if (messageType === 'command') return 'terminal-command';
+    if (username === currentUser) return 'terminal-success';
+    return 'terminal-text';
   };
 
   const getUsernameStyle = (username: string) => {
-    if (username === 'System') return 'text-yellow-400';
-    if (username === currentUser) return 'text-green-400';
-    return 'text-blue-400';
+    if (username === 'System') return 'terminal-system';
+    if (username === currentUser) return 'terminal-user';
+    return 'terminal-prompt';
   };
 
   return (
     <div className="flex flex-col h-full">
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-1 font-mono text-sm">
+      <div className="flex-1 overflow-y-auto terminal-content p-4 space-y-1 chat-message">
         {messages.length === 0 && (
-          <div className="text-center py-8 text-gray-500">
-            <i className="fas fa-terminal text-2xl mb-2 opacity-50"></i>
-            <p className="text-sm">Welcome to #{currentRoom}</p>
-            <p className="text-xs mt-1">Type a message or use /help for commands</p>
+          <div className="text-center py-8 terminal-system">
+            <div className="mb-4">╭─────────────────────────────────────╮</div>
+            <div className="mb-2">│     Welcome to #{currentRoom} chat room      │</div>
+            <div className="mb-2">│                                     │</div>
+            <div className="mb-2">│  Type a message or /help for help  │</div>
+            <div className="mb-4">╰─────────────────────────────────────╯</div>
           </div>
         )}
         
         {messages.map((message, index) => (
           <div key={message.id || index} className="leading-relaxed">
             {message.messageType === 'system' ? (
-              <div className="text-yellow-400">
-                <span className="text-gray-500">[{formatTimestamp(message.createdAt)}]</span>
+              <div className="terminal-system">
+                <span className="text-gray-600">[{formatTimestamp(message.createdAt)}]</span>
                 <span className="ml-2">*** {message.content} ***</span>
               </div>
             ) : message.messageType === 'command' ? (
-              <div className="text-blue-400 whitespace-pre-wrap">
-                <span className="text-gray-500">[{formatTimestamp(message.createdAt)}]</span>
+              <div className="command-output">
+                <span className="text-gray-600">[{formatTimestamp(message.createdAt)}]</span>
                 <span className="ml-2 terminal-prompt">$</span>
                 <span className="ml-2">{message.content}</span>
               </div>
             ) : (
               <div className={getMessageStyle(message.messageType, message.username)}>
-                <span className="text-gray-500">[{formatTimestamp(message.createdAt)}]</span>
+                <span className="text-gray-600">[{formatTimestamp(message.createdAt)}]</span>
                 <span className={`ml-2 font-medium ${getUsernameStyle(message.username)}`}>
                   {message.username}:
                 </span>
@@ -93,35 +95,40 @@ export default function TerminalChat({ messages, currentUser, onSendMessage, cur
       </div>
 
       {/* Input Area */}
-      <div className="panel-bg border-t border-gray-700 p-4">
-        <form onSubmit={handleSubmit} className="flex items-center space-x-3">
-          <div className="flex items-center text-sm font-mono">
-            <span className="text-green-400">{currentUser}@terminal</span>
-            <span className="text-white">:</span>
-            <span className="text-blue-400">~/{currentRoom}</span>
-            <span className="text-white ml-1">$</span>
+      <div className="panel-bg border-t-2" style={{borderColor: 'var(--terminal-border)'}}>
+        <div className="p-3">
+          <form onSubmit={handleSubmit} className="flex items-center space-x-3">
+            <div className="flex items-center text-sm font-mono">
+              <span className="terminal-user">{currentUser}</span>
+              <span className="terminal-text">@</span>
+              <span className="terminal-prompt">chatserver</span>
+              <span className="terminal-text">:</span>
+              <span className="terminal-path">~/{currentRoom}</span>
+              <span className="terminal-success ml-1">$</span>
+              <span className="terminal-cursor ml-1">_</span>
+            </div>
+            
+            <input
+              ref={inputRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Type a message or /help for commands..."
+              className="flex-1 terminal-input"
+              autoFocus
+            />
+            
+            <button
+              type="submit"
+              className="terminal-prompt hover:terminal-success transition-colors px-2"
+              disabled={!input.trim()}
+            >
+              →
+            </button>
+          </form>
+          
+          <div className="mt-2 text-xs terminal-system font-mono">
+            <span>Commands: /help /users /rooms /join &lt;room&gt; /clear /whoami</span>
           </div>
-          
-          <Input
-            ref={inputRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Type a message or /help for commands..."
-            className="flex-1 terminal-bg border border-gray-600 rounded px-3 py-2 text-sm font-mono terminal-text placeholder-gray-500 focus:outline-none focus:border-blue-400"
-            autoFocus
-          />
-          
-          <button
-            type="submit"
-            className="text-gray-400 hover:text-blue-400 transition-colors"
-            disabled={!input.trim()}
-          >
-            <i className="fas fa-paper-plane"></i>
-          </button>
-        </form>
-        
-        <div className="mt-2 text-xs text-gray-500 font-mono">
-          <span>Commands: /help /users /rooms /join &lt;room&gt; /clear /whoami</span>
         </div>
       </div>
     </div>

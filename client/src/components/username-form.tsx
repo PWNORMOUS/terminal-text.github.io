@@ -38,53 +38,81 @@ export default function UsernameForm({ onJoin, isConnected }: UsernameFormProps)
   };
 
   return (
-    <div className="terminal-bg border border-gray-600 rounded-lg p-6">
-      <div className="mb-4">
-        <h2 className="text-lg font-semibold text-white mb-2 flex items-center">
-          <i className="fas fa-user mr-2 text-blue-400"></i>
-          Choose Username
-        </h2>
-        <p className="text-sm text-gray-400">
-          Enter a username to join the terminal chat
-        </p>
+    <div className="terminal-window">
+      <div className="terminal-header">
+        <button className="terminal-button close"></button>
+        <button className="terminal-button minimize"></button>
+        <button className="terminal-button maximize"></button>
+        <span className="terminal-title">Terminal Login - chatserver.local</span>
       </div>
       
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <div>
-          <Label className="block text-xs font-medium text-gray-400 mb-1">
-            Username
-          </Label>
-          <Input
-            {...form.register("username")}
-            placeholder="your_username"
-            className="w-full terminal-bg border border-gray-600 rounded px-3 py-2 text-sm terminal-text placeholder-gray-500 focus:outline-none focus:border-blue-400"
-            autoFocus
-          />
-          {form.formState.errors.username && (
-            <p className="text-red-400 text-xs mt-1">
-              {form.formState.errors.username.message}
-            </p>
-          )}
+      <div className="p-6">
+        <div className="mb-6 chat-message">
+          <div className="terminal-system mb-2">
+            ╭─────────────────────────────────────╮
+          </div>
+          <div className="terminal-system mb-2">
+            │     TERMINAL CHAT LOGIN PORTAL     │
+          </div>
+          <div className="terminal-system mb-2">
+            │                                     │
+          </div>
+          <div className="terminal-system mb-4">
+            ╰─────────────────────────────────────╯
+          </div>
+          <p className="text-sm terminal-text">
+            <span className="terminal-prompt">$</span> Enter your username to access the chat system
+          </p>
         </div>
-
-        <Button
-          type="submit"
-          disabled={!isConnected || isJoining}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded text-sm transition-colors duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <i className="fas fa-sign-in-alt mr-2"></i>
-          {isJoining ? 'Joining...' : 'Join Chat'}
-        </Button>
-      </form>
       
-      <div className="mt-4 text-xs text-gray-500">
-        <p>Commands available after joining:</p>
-        <ul className="mt-1 space-y-1">
-          <li><span className="terminal-prompt">/help</span> - Show available commands</li>
-          <li><span className="terminal-prompt">/users</span> - List online users</li>
-          <li><span className="terminal-prompt">/rooms</span> - List chat rooms</li>
-          <li><span className="terminal-prompt">/join &lt;room&gt;</span> - Switch rooms</li>
-        </ul>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <div>
+            <div className="flex items-center text-sm chat-message mb-2">
+              <span className="terminal-user">user</span>
+              <span className="terminal-text">@</span>
+              <span className="terminal-prompt">chatserver</span>
+              <span className="terminal-text">:</span>
+              <span className="terminal-path">~</span>
+              <span className="terminal-success ml-1">$</span>
+              <span className="terminal-cursor ml-1">_</span>
+            </div>
+            <input
+              {...form.register("username")}
+              placeholder="enter_username_here"
+              className="w-full terminal-input py-2"
+              autoFocus
+            />
+            {form.formState.errors.username && (
+              <p className="terminal-error text-xs mt-1">
+                ERROR: {form.formState.errors.username.message}
+              </p>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            disabled={!isConnected || isJoining}
+            className="w-full terminal-bg panel-bg px-4 py-2.5 chat-message transition-colors duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{
+              border: '1px solid var(--terminal-border)',
+              borderRadius: '4px',
+              color: 'var(--terminal-success)'
+            }}
+          >
+            <span className="mr-2">►</span>
+            {isJoining ? 'CONNECTING...' : 'CONNECT TO CHAT'}
+          </button>
+        </form>
+      
+        <div className="mt-4 text-xs terminal-system chat-message">
+          <p>Commands available after joining:</p>
+          <ul className="mt-1 space-y-1">
+            <li><span className="terminal-command">/help</span> <span className="terminal-system">- Show available commands</span></li>
+            <li><span className="terminal-command">/users</span> <span className="terminal-system">- List online users</span></li>
+            <li><span className="terminal-command">/rooms</span> <span className="terminal-system">- List chat rooms</span></li>
+            <li><span className="terminal-command">/join &lt;room&gt;</span> <span className="terminal-system">- Switch rooms</span></li>
+          </ul>
+        </div>
       </div>
     </div>
   );
