@@ -9,6 +9,8 @@ import {
   type ChatMessage,
   type InsertChatMessage
 } from "@shared/schema";
+import { db } from "./db";
+import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {
   // User methods
@@ -29,156 +31,134 @@ export interface IStorage {
   createMessage(message: InsertChatMessage): Promise<ChatMessage>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private chatRooms: Map<number, ChatRoom>;
-  private chatMessages: Map<number, ChatMessage>;
-  private currentUserId: number;
-  private currentRoomId: number;
-  private currentMessageId: number;
-
+export class DatabaseStorage implements IStorage {
   constructor() {
-    this.users = new Map();
-    this.chatRooms = new Map();
-    this.chatMessages = new Map();
-    this.currentUserId = 1;
-    this.currentRoomId = 1;
-    this.currentMessageId = 1;
-
-    // Create default room
-    this.createDefaultRoom();
+    // Initialize default rooms on startup
+    this.initializeDefaultRooms();
   }
 
-  private createDefaultRoom() {
-    const defaultRooms: ChatRoom[] = [
+  private async initializeDefaultRooms() {
+    try {
+      const existingRooms = await db.select().from(chatRooms);
+      if (existingRooms.length === 0) {
+        await this.createDefaultRooms();
+      }
+    } catch (error) {
+      console.error('Error initializing default rooms:', error);
+    }
+  }
+
+  private async createDefaultRooms() {
+    const defaultRooms = [
       {
-        id: this.currentRoomId++,
         name: "general",
         description: "General chat room",
         isPrivate: false,
-        createdAt: new Date(),
       },
       {
-        id: this.currentRoomId++,
         name: "random",
         description: "Random conversations and off-topic chat",
         isPrivate: false,
-        createdAt: new Date(),
       },
       {
-        id: this.currentRoomId++,
         name: "tech",
         description: "Technology and programming discussions",
         isPrivate: false,
-        createdAt: new Date(),
       },
       {
-        id: this.currentRoomId++,
         name: "gaming",
         description: "Gaming discussions and finding teammates",
         isPrivate: false,
-        createdAt: new Date(),
       },
       {
-        id: this.currentRoomId++,
         name: "help",
         description: "Ask for help and assistance",
         isPrivate: false,
-        createdAt: new Date(),
       }
     ];
-    
-    defaultRooms.forEach(room => {
-      this.chatRooms.set(room.id, room);
-    });
+
+    for (const room of defaultRooms) {
+      await db.insert(chatRooms).values(room);
+    }
   }
 
   // User methods
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentUserId++;
-    const user: User = {
-      id,
-      username: insertUser.username,
-      displayName: insertUser.displayName || null,
-      isOnline: true,
-      lastSeen: new Date(),
-      createdAt: new Date(),
-    };
-    this.users.set(id, user);
+    const [user] = await db
+      .insert(users)
+      .values({
+        ...insertUser,
+        isOnline: true,
+        lastSeen: new Date(),
+      })
+      .returning();
     return user;
   }
 
   async updateUserOnlineStatus(username: string, isOnline: boolean): Promise<void> {
-    const user = await this.getUserByUsername(username);
-    if (user) {
-      user.isOnline = isOnline;
-      user.lastSeen = new Date();
-      this.users.set(user.id, user);
-    }
+    await db
+      .update(users)
+      .set({ 
+        isOnline, 
+        lastSeen: new Date() 
+      })
+      .where(eq(users.username, username));
   }
 
   async getOnlineUsers(): Promise<User[]> {
-    return Array.from(this.users.values()).filter(user => user.isOnline);
+    return await db.select().from(users).where(eq(users.isOnline, true));
   }
 
   // Chat room methods
   async getChatRoom(id: number): Promise<ChatRoom | undefined> {
-    return this.chatRooms.get(id);
+    const [room] = await db.select().from(chatRooms).where(eq(chatRooms.id, id));
+    return room || undefined;
   }
 
   async getChatRoomByName(name: string): Promise<ChatRoom | undefined> {
-    return Array.from(this.chatRooms.values()).find(room => room.name === name);
+    const [room] = await db.select().from(chatRooms).where(eq(chatRooms.name, name));
+    return room || undefined;
   }
 
   async getChatRooms(): Promise<ChatRoom[]> {
-    return Array.from(this.chatRooms.values());
+    return await db.select().from(chatRooms);
   }
 
   async createChatRoom(insertRoom: InsertChatRoom): Promise<ChatRoom> {
-    const id = this.currentRoomId++;
-    const room: ChatRoom = {
-      id,
-      name: insertRoom.name,
-      description: insertRoom.description || null,
-      isPrivate: insertRoom.isPrivate || false,
-      createdAt: new Date(),
-    };
-    this.chatRooms.set(id, room);
+    const [room] = await db
+      .insert(chatRooms)
+      .values(insertRoom)
+      .returning();
     return room;
   }
 
   // Chat message methods
   async getMessages(roomId: number, limit: number = 50): Promise<ChatMessage[]> {
-    const messages = Array.from(this.chatMessages.values())
-      .filter(message => message.roomId === roomId)
-      .sort((a, b) => (a.createdAt?.getTime() || 0) - (b.createdAt?.getTime() || 0))
-      .slice(-limit);
-    return messages;
+    return await db
+      .select()
+      .from(chatMessages)
+      .where(eq(chatMessages.roomId, roomId))
+      .orderBy(desc(chatMessages.createdAt))
+      .limit(limit);
   }
 
   async createMessage(insertMessage: InsertChatMessage): Promise<ChatMessage> {
-    const id = this.currentMessageId++;
-    const message: ChatMessage = {
-      id,
-      roomId: insertMessage.roomId,
-      username: insertMessage.username,
-      content: insertMessage.content,
-      messageType: insertMessage.messageType || 'message',
-      createdAt: new Date(),
-    };
-    this.chatMessages.set(id, message);
+    const [message] = await db
+      .insert(chatMessages)
+      .values(insertMessage)
+      .returning();
     return message;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();

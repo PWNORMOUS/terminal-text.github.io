@@ -22,9 +22,9 @@ This is a full-stack web application that provides a terminal-style chat interfa
 - **Session Management**: In-memory storage with option for database persistence
 
 ### Data Storage Solutions
-- **Primary Database**: PostgreSQL for connection configurations and user data
+- **Primary Database**: PostgreSQL for persistent user data, chat rooms, and message history
 - **ORM**: Drizzle ORM with TypeScript schema definitions
-- **Session Storage**: In-memory Map for active SSH sessions
+- **Session Storage**: Database-backed storage for all chat data
 - **Database Provider**: Neon Database (serverless PostgreSQL)
 
 ## Key Components
@@ -117,6 +117,11 @@ Changelog:
   * Fixed message ordering and WebSocket stability issues
   * Added 5 default chat rooms (general, random, tech, gaming, help)
   * Cleared all user data for public release
+- June 27, 2025. Added persistent database storage for player data
+  * Converted from in-memory storage to PostgreSQL database
+  * All usernames, chat history, and room data now persist between sessions
+  * Users no longer lose their data when server restarts
+  * Implemented DatabaseStorage class with full CRUD operations
 ```
 
 ## User Preferences
