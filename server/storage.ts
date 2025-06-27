@@ -50,14 +50,47 @@ export class MemStorage implements IStorage {
   }
 
   private createDefaultRoom() {
-    const defaultRoom: ChatRoom = {
-      id: this.currentRoomId++,
-      name: "general",
-      description: "General chat room",
-      isPrivate: false,
-      createdAt: new Date(),
-    };
-    this.chatRooms.set(defaultRoom.id, defaultRoom);
+    const defaultRooms: ChatRoom[] = [
+      {
+        id: this.currentRoomId++,
+        name: "general",
+        description: "General chat room",
+        isPrivate: false,
+        createdAt: new Date(),
+      },
+      {
+        id: this.currentRoomId++,
+        name: "random",
+        description: "Random conversations and off-topic chat",
+        isPrivate: false,
+        createdAt: new Date(),
+      },
+      {
+        id: this.currentRoomId++,
+        name: "tech",
+        description: "Technology and programming discussions",
+        isPrivate: false,
+        createdAt: new Date(),
+      },
+      {
+        id: this.currentRoomId++,
+        name: "gaming",
+        description: "Gaming discussions and finding teammates",
+        isPrivate: false,
+        createdAt: new Date(),
+      },
+      {
+        id: this.currentRoomId++,
+        name: "help",
+        description: "Ask for help and assistance",
+        isPrivate: false,
+        createdAt: new Date(),
+      }
+    ];
+    
+    defaultRooms.forEach(room => {
+      this.chatRooms.set(room.id, room);
+    });
   }
 
   // User methods

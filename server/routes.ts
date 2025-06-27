@@ -149,6 +149,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         room: generalRoom?.name || 'general'
       }));
 
+      // Send welcome system message
+      ws.send(JSON.stringify({
+        type: 'system_message',
+        content: `Welcome to Terminal Chat, ${username}! Type /help for available commands.`,
+        timestamp: new Date().toISOString()
+      }));
+
       // Send recent messages
       const messages = await storage.getMessages(currentRoom, 20);
       ws.send(JSON.stringify({
@@ -183,9 +190,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const user = connectedUsers.get(ws);
       if (!user) {
+        console.log('User not authenticated, connected users:', connectedUsers.size);
         ws.send(JSON.stringify({
           type: 'error',
-          message: 'Not authenticated'
+          message: 'Not authenticated. Please refresh and join again.'
         }));
         return;
       }
@@ -395,19 +403,19 @@ ${rooms.map(r => `• ${r.name} - ${r.description || 'No description'}`).join('\
   }
 
   function broadcastToRoom(roomId: number, message: any, excludeWs?: WebSocket) {
-    for (const [ws, user] of connectedUsers.entries()) {
+    Array.from(connectedUsers.entries()).forEach(([ws, user]) => {
       if (user.currentRoom === roomId && ws !== excludeWs && ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify(message));
       }
-    }
+    });
   }
 
   function broadcastToAll(message: any, excludeWs?: WebSocket) {
-    for (const [ws] of connectedUsers.entries()) {
+    Array.from(connectedUsers.entries()).forEach(([ws]) => {
       if (ws !== excludeWs && ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify(message));
       }
-    }
+    });
   }
 
   return httpServer;
