@@ -1,8 +1,8 @@
-# SSH Terminal Web Application
+# Terminal Chat Application
 
 ## Overview
 
-This is a full-stack web application that provides a browser-based SSH terminal interface. Users can create, manage, and connect to SSH servers through a modern web interface with real-time terminal sessions powered by WebSockets.
+This is a full-stack web application that provides a terminal-style chat interface. Users can join chat rooms, communicate using terminal-like commands, and interact in real-time through WebSocket connections. The interface mimics a command-line terminal experience for a unique chatting experience.
 
 ## System Architecture
 
@@ -30,26 +30,27 @@ This is a full-stack web application that provides a browser-based SSH terminal 
 ## Key Components
 
 ### Database Schema
-- **SSH Connections Table**: Stores connection configurations (hostname, port, username, auth method, credentials)
-- **Users Table**: Basic user management (username, password)
-- **Authentication Methods**: Support for both password and SSH key authentication
+- **Chat Rooms Table**: Stores chat room configurations (name, description, privacy settings)
+- **Chat Messages Table**: Stores all chat messages with metadata (room, user, type, timestamp)
+- **Users Table**: User management (username, display name, online status, last seen)
 
-### SSH Session Management
-- Real-time SSH sessions managed through WebSocket connections
-- Session lifecycle management (connect, disconnect, cleanup)
-- Multi-session support with tabbed interface
-- Terminal resize handling and proper cleanup
+### Chat Session Management
+- Real-time chat sessions managed through WebSocket connections
+- Room-based messaging with persistent message history
+- Command system for user interactions (/help, /users, /rooms, /join, etc.)
+- Online user tracking and status management
 
-### Authentication and Authorization
-- Basic user authentication system
-- SSH credential management (passwords and private keys)
-- Session-based authentication with Express sessions
+### Terminal-Style Interface
+- Command-line inspired chat interface
+- Terminal prompt styling with user@hostname format
+- Monospace font and terminal color scheme
+- System messages and command responses formatted like terminal output
 
 ### UI Components
-- **Connection Form**: Create and configure SSH connections
-- **Terminal Tabs**: Multi-session terminal interface
-- **Session List**: Manage active and saved connections
-- **Toast Notifications**: User feedback for operations
+- **Username Form**: Initial user authentication and joining
+- **Terminal Chat**: Main chat interface with terminal styling
+- **Online Users**: Real-time list of connected users
+- **Rooms List**: Available chat rooms with join functionality
 
 ## Data Flow
 
@@ -102,6 +103,12 @@ This is a full-stack web application that provides a browser-based SSH terminal 
 ```
 Changelog:
 - June 27, 2025. Initial setup
+- June 27, 2025. Complete architectural change: Converted from SSH terminal to terminal-style chat application
+  * Replaced SSH connection management with chat room system
+  * Implemented real-time messaging with WebSocket communication
+  * Added terminal-style command system (/help, /users, /rooms, /join, etc.)
+  * Created username-based authentication and online user tracking
+  * Built terminal-themed UI with monospace fonts and command-line styling
 ```
 
 ## User Preferences

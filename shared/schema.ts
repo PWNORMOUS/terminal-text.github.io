@@ -2,38 +2,56 @@ import { pgTable, text, serial, integer, boolean, timestamp } from "drizzle-orm/
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const sshConnections = pgTable("ssh_connections", {
+// Chat rooms
+export const chatRooms = pgTable("chat_rooms", {
   id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  hostname: text("hostname").notNull(),
-  port: integer("port").notNull().default(22),
-  username: text("username").notNull(),
-  authMethod: text("auth_method").notNull(), // 'password' or 'key'
-  password: text("password"),
-  privateKey: text("private_key"),
-  isActive: boolean("is_active").default(false),
+  name: text("name").notNull().unique(),
+  description: text("description"),
+  isPrivate: boolean("is_private").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const insertConnectionSchema = createInsertSchema(sshConnections).omit({
+export const insertChatRoomSchema = createInsertSchema(chatRooms).omit({
   id: true,
-  isActive: true,
   createdAt: true,
 });
 
-export type InsertConnection = z.infer<typeof insertConnectionSchema>;
-export type Connection = typeof sshConnections.$inferSelect;
+export type InsertChatRoom = z.infer<typeof insertChatRoomSchema>;
+export type ChatRoom = typeof chatRooms.$inferSelect;
 
-// Keep existing users table
+// Chat messages
+export const chatMessages = pgTable("chat_messages", {
+  id: serial("id").primaryKey(),
+  roomId: integer("room_id").notNull(),
+  username: text("username").notNull(),
+  content: text("content").notNull(),
+  messageType: text("message_type").notNull().default("message"), // 'message', 'command', 'system'
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
+export type ChatMessage = typeof chatMessages.$inferSelect;
+
+// Users
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
-  password: text("password").notNull(),
+  displayName: text("display_name"),
+  isOnline: boolean("is_online").default(false),
+  lastSeen: timestamp("last_seen").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  isOnline: true,
+  lastSeen: true,
+  createdAt: true,
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;

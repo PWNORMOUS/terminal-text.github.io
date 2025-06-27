@@ -99,27 +99,33 @@
 
 .accent-blue {
   color: var(--accent-blue);
-  background-color: var(--accent-blue);
 }
 
-/* xterm.js overrides */
-.xterm {
-  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace !important;
-  font-size: 14px !important;
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
 }
 
-.xterm-viewport {
-  background-color: var(--terminal-bg) !important;
+::-webkit-scrollbar-track {
+  background: var(--terminal-bg);
 }
 
-.xterm-screen {
-  background-color: var(--terminal-bg) !important;
+::-webkit-scrollbar-thumb {
+  background: #4a5568;
+  border-radius: 4px;
 }
 
-.xterm-cursor {
-  background-color: var(--terminal-text) !important;
+::-webkit-scrollbar-thumb:hover {
+  background: #718096;
 }
 
-.xterm-selection {
-  background-color: rgba(255, 255, 255, 0.3) !important;
+/* Chat-specific styles */
+.chat-message {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  line-height: 1.5;
+}
+
+.command-output {
+  white-space: pre-wrap;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 }
