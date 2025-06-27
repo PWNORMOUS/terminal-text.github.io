@@ -109,6 +109,14 @@ Changelog:
   * Added terminal-style command system (/help, /users, /rooms, /join, etc.)
   * Created username-based authentication and online user tracking
   * Built terminal-themed UI with monospace fonts and command-line styling
+- June 27, 2025. Enhanced terminal authenticity and mobile responsiveness
+  * Applied authentic terminal colors and JetBrains Mono font
+  * Created realistic terminal window with titlebar and control buttons
+  * Added blinking cursor animation and proper terminal styling
+  * Implemented mobile-responsive layout for phone compatibility
+  * Fixed message ordering and WebSocket stability issues
+  * Added 5 default chat rooms (general, random, tech, gaming, help)
+  * Cleared all user data for public release
 ```
 
 ## User Preferences
