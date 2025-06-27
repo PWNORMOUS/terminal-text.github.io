@@ -187,11 +187,11 @@ export default function Chat() {
 
   if (!user?.isJoined) {
     return (
-      <div className="h-screen bg-terminal-bg text-terminal-text flex items-center justify-center">
-        <div className="max-w-md w-full mx-4">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">Terminal Chat</h1>
-            <p className="text-gray-400">Join the conversation in a terminal-style interface</p>
+      <div className="h-screen terminal-bg terminal-text flex items-center justify-center p-2 sm:p-4">
+        <div className="max-w-md w-full">
+          <div className="text-center mb-4 sm:mb-8">
+            <h1 className="text-xl sm:text-3xl font-bold terminal-success mb-2 chat-message">Terminal Chat</h1>
+            <p className="text-sm sm:text-base terminal-system">Join the conversation in a terminal-style interface</p>
           </div>
           
           <UsernameForm 
@@ -199,9 +199,9 @@ export default function Chat() {
             isConnected={isConnected}
           />
           
-          <div className="mt-6 text-center">
-            <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
-              <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'} ${!isConnected ? 'animate-pulse' : ''}`}></div>
+          <div className="mt-4 sm:mt-6 text-center">
+            <div className="flex items-center justify-center space-x-2 text-sm terminal-text chat-message">
+              <div className={`w-2 h-2 rounded-full ${isConnected ? 'status-online' : 'status-offline'} ${!isConnected ? 'status-connecting' : ''}`}></div>
               <span>{isConnected ? 'Connected' : 'Connecting...'}</span>
             </div>
           </div>
@@ -211,33 +211,39 @@ export default function Chat() {
   }
 
   return (
-    <div className="h-screen terminal-bg terminal-text overflow-hidden p-4">
+    <div className="h-screen terminal-bg terminal-text overflow-hidden p-1 sm:p-4">
       <div className="terminal-window h-full flex flex-col">
         {/* Terminal Header */}
         <div className="terminal-header">
           <button className="terminal-button close"></button>
           <button className="terminal-button minimize"></button>
           <button className="terminal-button maximize"></button>
-          <span className="terminal-title">Terminal Chat - {user.username}@chatserver:~/{currentRoom}</span>
-          <div className="ml-auto flex items-center space-x-3 text-xs">
+          <span className="terminal-title hidden sm:inline">Terminal Chat - {user.username}@chatserver:~/{currentRoom}</span>
+          <span className="terminal-title sm:hidden text-xs">{user.username}@{currentRoom}</span>
+          <div className="ml-auto flex items-center space-x-1 sm:space-x-3 text-xs">
             <div className="flex items-center space-x-1">
               <div className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'status-online' : 'status-offline'} ${!isConnected ? 'status-connecting' : ''}`}></div>
-              <span className={isConnected ? 'status-online' : 'status-offline'}>
+              <span className={`hidden sm:inline ${isConnected ? 'status-online' : 'status-offline'}`}>
                 {isConnected ? 'ONLINE' : 'OFFLINE'}
               </span>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-1 overflow-hidden">
-          {/* Sidebar */}
-          <aside className="w-80 panel-bg border-r border-gray-800 flex flex-col overflow-hidden">
-            <OnlineUsers users={onlineUsers} currentUser={user.username} />
-            <RoomsList 
-              rooms={rooms}
-              currentRoom={currentRoom}
-              onJoinRoom={handleJoinRoom}
-            />
+        <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
+          {/* Sidebar - collapsible on mobile */}
+          <aside className="w-full lg:w-80 panel-bg border-b lg:border-r lg:border-b-0 border-gray-800 flex flex-col overflow-hidden max-h-32 lg:max-h-none">
+            <div className="lg:hidden">
+              <OnlineUsers users={onlineUsers} currentUser={user.username} />
+            </div>
+            <div className="hidden lg:block">
+              <OnlineUsers users={onlineUsers} currentUser={user.username} />
+              <RoomsList 
+                rooms={rooms}
+                currentRoom={currentRoom}
+                onJoinRoom={handleJoinRoom}
+              />
+            </div>
           </aside>
 
           {/* Main Chat Area */}

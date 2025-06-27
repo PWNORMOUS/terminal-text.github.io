@@ -97,8 +97,8 @@ export default function TerminalChat({ messages, currentUser, onSendMessage, cur
       {/* Input Area */}
       <div className="panel-bg border-t-2" style={{borderColor: 'var(--terminal-border)'}}>
         <div className="p-3">
-          <form onSubmit={handleSubmit} className="flex items-center space-x-3">
-            <div className="flex items-center text-sm font-mono">
+          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+            <div className="flex items-center text-xs sm:text-sm font-mono">
               <span className="terminal-user">{currentUser}</span>
               <span className="terminal-text">@</span>
               <span className="terminal-prompt">chatserver</span>
@@ -108,25 +108,35 @@ export default function TerminalChat({ messages, currentUser, onSendMessage, cur
               <span className="terminal-cursor ml-1">_</span>
             </div>
             
-            <input
-              ref={inputRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Type a message or /help for commands..."
-              className="flex-1 terminal-input"
-              autoFocus
-            />
-            
-            <button
-              type="submit"
-              className="terminal-prompt hover:terminal-success transition-colors px-2"
-              disabled={!input.trim()}
-            >
-              →
-            </button>
+            <div className="flex w-full sm:flex-1 space-x-2">
+              <input
+                ref={inputRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Type message or /help..."
+                className="flex-1 terminal-input text-sm"
+                autoFocus
+              />
+              
+              <button
+                type="submit"
+                className="terminal-prompt hover:terminal-success transition-colors px-3 py-1 text-sm"
+                disabled={!input.trim()}
+              >
+                →
+              </button>
+            </div>
           </form>
           
           <div className="mt-2 text-xs terminal-system font-mono">
+            <div className="sm:hidden mb-1">
+              <span>Rooms: </span>
+              <span className="terminal-command">/join general</span>
+              <span className="mx-1">•</span>
+              <span className="terminal-command">/join tech</span>
+              <span className="mx-1">•</span>
+              <span className="terminal-command">/join gaming</span>
+            </div>
             <span>Commands: /help /users /rooms /join &lt;room&gt; /clear /whoami</span>
           </div>
         </div>
